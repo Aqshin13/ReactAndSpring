@@ -19,7 +19,7 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-    @NotNull
+    @NotNull(message = "{hoaxify.constraints.username.NotNull.message}")
     @Size(min = 4, max = 255)
 //    @Column(unique = true)//Bazada datani unique edir
     @UniqueUsername
@@ -28,7 +28,7 @@ public class User {
     @Size(min = 4, max = 255)
     private String displayName;
     @NotNull
-    @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).*$")
+    @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).*$",message = "{hoaxify.constraints.password.Pattern.message}")
     @Size(min = 8, max = 255)
     private String password;
 
