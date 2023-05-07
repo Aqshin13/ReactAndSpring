@@ -58,11 +58,6 @@ class UserSignupPage extends React.Component {
     this.setState({ pendingApiCall: false });
   };
 
-  onChangeLanguage = (language) => {
-    const { i18n } = this.props;
-    i18n.changeLanguage(language);
-    changeLanguage(language);
-  };
 
   render() {
     const { pendingApiCall, errors } = this.state;
@@ -121,26 +116,7 @@ class UserSignupPage extends React.Component {
             </button>
           </div>
 
-          <div>
-            <button
-              onClick={(e) => {
-                e.preventDefault();
-                this.onChangeLanguage("tr");
-              }}
-              style={{ cursor: "pointer", marginRight: "10px" }}
-            >
-              TR
-            </button>
-            <button
-              onClick={(e) => {
-                e.preventDefault();
-                this.onChangeLanguage("en");
-              }}
-              style={{ cursor: "pointer" }}
-            >
-              US
-            </button>
-          </div>
+         
         </form>
       </div>
     );
