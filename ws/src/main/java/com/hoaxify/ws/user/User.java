@@ -1,6 +1,9 @@
 package com.hoaxify.ws.user;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonView;
+import com.hoaxify.ws.shared.Views;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -23,14 +26,28 @@ public class User {
     @Size(min = 4, max = 255)
 //    @Column(unique = true)//Bazada datani unique edir
     @UniqueUsername
+    @JsonView(Views.Base.class)
     private String username;
+
     @NotNull
     @Size(min = 4, max = 255)
+    @JsonView(Views.Base.class)
     private String displayName;
+
     @NotNull
-    @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).*$",message = "{hoaxify.constraints.password.Pattern.message}")
+    @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).*$", message = "{hoaxify.constraints.password.Pattern.message}")
     @Size(min = 8, max = 255)
+//    @JsonIgnore iki terefli ignore edir.Yeni request gelende de Object create olunanda meselen password set olmur
     private String password;
 
+    @JsonView(Views.Base.class)
+    private String image;
 
+
+    public User(long id, String username, String displayName, String password) {
+        this.id = id;
+        this.username = username;
+        this.displayName = displayName;
+        this.password = password;
+    }
 }
