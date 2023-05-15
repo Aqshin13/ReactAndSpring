@@ -35,18 +35,18 @@ public class UserController {
 
 
 //    Classa aid handle
-    @ExceptionHandler({MethodArgumentNotValidException.class})
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ApiError handleValidationException(MethodArgumentNotValidException exception) {
-        ApiError error = new ApiError(400, "Validation Error", "/api/1.0/users");
-        Map<String, String> validationErrors = new HashMap<>();
-
-        for (FieldError fieldError:exception.getBindingResult().getFieldErrors()){
-         validationErrors.put(fieldError.getField(), fieldError.getDefaultMessage());
-        }
-        error.setValidationErrors(validationErrors);
-        return error;
-    }
+//    @ExceptionHandler({MethodArgumentNotValidException.class})
+//    @ResponseStatus(HttpStatus.BAD_REQUEST)
+//    public ApiError handleValidationException(MethodArgumentNotValidException exception) {
+//        ApiError error = new ApiError(400, "Validation Error", "/api/1.0/users");
+//        Map<String, String> validationErrors = new HashMap<>();
+//
+//        for (FieldError fieldError:exception.getBindingResult().getFieldErrors()){
+//         validationErrors.put(fieldError.getField(), fieldError.getDefaultMessage());
+//        }
+//        error.setValidationErrors(validationErrors);
+//        return error;
+//    }
 
 
 
