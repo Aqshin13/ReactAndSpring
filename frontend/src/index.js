@@ -7,14 +7,13 @@ import LoginPage from "./pages/LoginPage";
 import LanguageSelector from "./components/LanguageSelector";
 import reportWebVitals from "./reportWebVitals";
 import "./i18n";
+import ApiProgress from "./shared/ApiProgress";
+import App from "./container/App";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
-    <div>
-      <LoginPage />
-      <LanguageSelector />
-    </div>
+   <App/>
   </React.StrictMode>
 );
 
