@@ -102,17 +102,6 @@ class UserSignupPage extends React.Component {
           <br />
 
           <div className="text-center">
-            {/* <button
-              className="btn btn-primary"
-              onClick={this.onClickSignup}
-              disabled={pendingApiCall || passwordRepeat !== undefined}
-            >
-              {pendingApiCall && (
-                <span className="spinner-border spinner-border-sm"></span>
-              )}
-              {t("Sign Up")}
-            </button> */}
-
             <ButtonWithProgress
               onClick={this.onClickSignup}
               disabled={pendingApiCall || passwordRepeat !== undefined}

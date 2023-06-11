@@ -63,15 +63,8 @@ class LoginPage extends React.Component {
           <br />
 
           {error && <div className="alert alert-danger">{error}</div>}
-          {/* <br /> */}
           <div className="text-center">
-            {/* <button
-              className="btn btn-primary"
-              onClick={this.onClickLogin}
-              disabled={!buttonEnabled || pendingApiCall}
-            >
-              {t("Login")}
-            </button> */}
+           
             <ButtonWithProgress
               onClick={this.onClickLogin}
               disabled={!buttonEnabled || pendingApiCall}
