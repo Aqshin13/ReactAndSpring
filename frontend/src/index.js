@@ -9,12 +9,13 @@ import reportWebVitals from "./reportWebVitals";
 import "./i18n";
 import ApiProgress from "./shared/ApiProgress";
 import App from "./container/App";
+import AuthenticationContext from "./shared/AuthenticationContext";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
-  <React.Suspense>
+  <AuthenticationContext>
    <App/>
-  </React.Suspense>
+  </AuthenticationContext>
 );
 
 reportWebVitals();
