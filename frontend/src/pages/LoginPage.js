@@ -4,21 +4,17 @@ import { withTranslation } from "react-i18next";
 import { login } from "../api/apiCalls";
 import ButtonWithProgress from "../components/ButtonWithProgress";
 import { withApiProgress } from "../shared/ApiProgress";
-// import { Authentication } from "../shared/AuthenticationContext";
+import { connect } from "react-redux";
+import { loginHandler, loginSuccess } from "../redux/authActions";
 
 class LoginPage extends React.Component {
-
-
   // static contextType=Authentication
 
   state = {
     username: null,
     password: null,
     error: null,
-    
   };
-
-  
 
   onChange = (event) => {
     const { name, value } = event.target;
@@ -28,28 +24,22 @@ class LoginPage extends React.Component {
   onClickLogin = async (event) => {
     event.preventDefault();
     const { username, password } = this.state;
-    const onLoginSuccess = () => {};
 
     const creds = {
       username,
       password,
     };
 
-    const { push } = this.props.history;
+    const { history, dispatch } = this.props;
+    const { push } = history;
 
     this.setState({
       error: null,
     });
     try {
-     const response= await login(creds);
-      push('/');
 
-     const authState={
-      ...response.data,
-              password
-     }
-
-      onLoginSuccess(authState)
+     await dispatch(loginHandler(creds))
+      push("/");
 
     } catch (apiError) {
       console.log(apiError);
@@ -58,7 +48,7 @@ class LoginPage extends React.Component {
   };
 
   render() {
-    const { t ,pendingApiCall} = this.props;
+    const { t, pendingApiCall } = this.props;
     const { username, password, error } = this.state;
     const buttonEnabled = username && password;
 
@@ -83,12 +73,11 @@ class LoginPage extends React.Component {
 
           {error && <div className="alert alert-danger">{error}</div>}
           <div className="text-center">
-           
             <ButtonWithProgress
               onClick={this.onClickLogin}
               disabled={!buttonEnabled || pendingApiCall}
               pendingApiCall={pendingApiCall}
-              text={t('Login')}
+              text={t("Login")}
             />
           </div>
         </form>
@@ -97,7 +86,8 @@ class LoginPage extends React.Component {
   }
 }
 
+const LoginPageWithTranslation = withTranslation()(LoginPage);
 
-const LoginPageWithTranslation=withTranslation()(LoginPage);
-
-export default withApiProgress(LoginPageWithTranslation,"/api/1.0/auth");
+export default connect()(
+  withApiProgress(LoginPageWithTranslation, "/api/1.0/auth")
+);
