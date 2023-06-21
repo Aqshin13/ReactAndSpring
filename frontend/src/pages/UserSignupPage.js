@@ -1,55 +1,38 @@
 import React, { useState } from "react";
 import { signup, changeLanguage } from "../api/apiCalls";
 import Input from "../components/Input";
-import { withTranslation } from "react-i18next";
+import { useTranslation } from "react-i18next";
 import ButtonWithProgress from "../components/ButtonWithProgress";
-import { withApiProgress } from "../shared/ApiProgress";
-import { connect } from "react-redux";
+import { useApiProgress, withApiProgress } from "../shared/ApiProgress";
+import { useDispatch } from "react-redux";
 import { signupHandler } from "../redux/authActions";
 
 const UserSignupPage = (props) => {
-  const [username, setUsername] = useState();
-  const [displayName, setDisplayName] = useState();
-  const [password, setPassword] = useState();
-  const [passwordRepeat, setPasswordRepeat] = useState();
+
+  const [form,setForm]=useState({
+    username: null,
+    displayName: null,
+    password: null,
+    passwordRepeat: null
+  })
+
   const [errors, setErrors] = useState({});
-  // state = {
-  //   username: null,
-  //   displayName: null,
-  //   password: null,
-  //   passwordRepeat: null,
-  //   errors: {},
-  // };
+  
+  const dispatch=useDispatch()
 
   const onChange = (event) => {
-    const { t } = props;
-
     const { name, value } = event.target;
-
-    // const errors = { ...this.state.errors };
-
-    errors[name] = undefined;
-
-    if (name === "password" || name === "passwordRepeat") {
-      if (name === "password" && value !== this.state.passwordRepeat) {
-        errors.passwordRepeat = t("Password mismatch");
-      } else if (name === "passwordRepeat" && value !== this.state.password) {
-        errors.passwordRepeat = t("Password mismatch");
-      } else {
-        errors.passwordRepeat = undefined;
-      }
-    }
-
-    // this.setState({ [name]: value, errors });
+    setErrors((previousErrors) => ({ ...previousErrors, [name]: undefined }));
+    setForm((previousForm) => ({ ...previousForm, [name]: value }));
   };
 
   const onClickSignup = async (event) => {
     event.preventDefault();
 
-    const { history, dispatch } = props;
+    const { history } = props;
     const { push } = history;
 
-    // const { username, displayName, password } = this.state;
+    const { username, displayName, password } = form
 
     const body = {
       username,
@@ -63,23 +46,30 @@ const UserSignupPage = (props) => {
     } catch (error) {
       console.log(error);
       if (error.response.data.validationErrors) {
-        // this.setState({ errors: error.response.data.validationErrors });
+        setErrors(error.response.data.validationErrors)
       }
     }
   };
 
-  // const { errors } = this.state;
+  const{t}=useTranslation()
 
-  // const errors = {};
   const {
     username: usernameError,
     displayName: displayNameError,
     password: passwordError,
-    passwordRepeat:passwordRepeatError,
   } = errors;
 
-  const { pendingApiCall, t } = props;
+  const  pendingApiCallSignup=useApiProgress("/api/1.0/users"); 
+  const  pendingApiCallLogin=useApiProgress("/api/1.0/auth"); 
+  
+  const pendingApiCall = pendingApiCallSignup || pendingApiCallLogin;
 
+
+
+  let passwordRepeatError;
+  if (form.password !== form.passwordRepeat) {
+    passwordRepeatError = t('Password mismatch');
+  }
   return (
     <div className="container">
       <form>
@@ -131,17 +121,6 @@ const UserSignupPage = (props) => {
   );
 };
 
-const UserSignupPageWithApiProgressForSignupRequest = withApiProgress(
-  UserSignupPage,
-  "/api/1.0/users"
-);
-const UserSignupPageWithApiProgressForAuthRequest = withApiProgress(
-  UserSignupPageWithApiProgressForSignupRequest,
-  "/api/1.0/auth"
-);
 
-const UserSignupPageWithTranslation = withTranslation()(
-  UserSignupPageWithApiProgressForAuthRequest
-);
 
-export default connect()(UserSignupPageWithTranslation);
+export default UserSignupPage;

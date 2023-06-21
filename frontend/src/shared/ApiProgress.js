@@ -1,61 +1,51 @@
-import React, { Component } from "react";
+import React, { Component, useEffect, useState } from "react";
 import axios from "axios";
 
-function getDisplayName(WrappedComponent) {
-  return WrappedComponent.displayName || WrappedComponent.name || "Component";
-}
+export const useApiProgress = (apiPath) => {
+  const [pendingApiCall, setPendingApiCall] = useState(false);
 
-export function withApiProgress(WrappedComponent, apiPath) {
-  return class extends Component {
-    static displayName = `ApiProgress(${getDisplayName(WrappedComponent)})`;
-    // static displayName="ApiProgress("+getDisplayName(WrappedComponent)+")";
+  useEffect(() => {
+    let requestInterceptor, responseInterceptor;
 
-    state = {
-      pendingApiCall: false,
-    };
-
-    componentDidMount() {
-      //Sehife render olub bitdikden sonra ise dusur ve interceptorslar assign olunur
-      //(Yeni axios'a interceptorlar set olunur)
-      //Her requestde ise bu interceptorlar ise dusur
-
-      this.requestInterceptor =  axios.interceptors.request.use((request) => {
-        this.updateApiCallFor(request.url, true);
-        return request;
-      });
-
-      this.responseInterceptor = axios.interceptors.response.use(
-        (response) => {
-          this.updateApiCallFor(response.config.url, false);
-          return response;
-        },
-        (error) => {
-          this.updateApiCallFor(error.config.url, false);
-          throw error;
-        }
-      );
-    }
-
-    componentWillUnmount() {
-      axios.interceptors.request.eject(this.requestInterceptor);
-      axios.interceptors.response.eject(this.responseInterceptor);//interseptor silinir
-    }
-
-    updateApiCallFor = (url, inProgress) => {
+    const updateApiCallFor = (url, inProgress) => {
       if (url === apiPath) {
-        this.setState({ pendingApiCall: inProgress });
+        setPendingApiCall(inProgress);
       }
     };
 
-    render() {
-      const pendingApiCall = this.state.pendingApiCall || this.props.pendingApiCall;
-      return (
-        <WrappedComponent {...this.props} pendingApiCall={pendingApiCall}  />
-      );
-      // <div>{React.cloneElement(this.props.children, { pendingApiCall })}</div>
+    const registerInterceptors = () => {
+      requestInterceptor = axios.interceptors.request.use((request) => {
+        updateApiCallFor(request.url, true);
+        return request;
+      });
 
-      //Eslinde subelementi clone edirem ve propsuna pendingApiCall otururem.
-      //Yeni render olunan sey kopya elementdi
-    }
-  };
-}
+      responseInterceptor = axios.interceptors.response.use(
+        (response) => {
+          updateApiCallFor(response.config.url, false);
+          return response;
+        },
+        (error) => {
+          updateApiCallFor(error.config.url, false);
+          throw error;
+        }
+      );
+    };
+
+    const unregisterInterceptors = () => {
+      axios.interceptors.request.eject(requestInterceptor);
+      axios.interceptors.response.eject(responseInterceptor); //interseptor silinir
+    };
+
+    registerInterceptors();
+
+    return function unmount() {
+      unregisterInterceptors();
+    };
+  });
+
+  return pendingApiCall;
+};
+
+
+
+

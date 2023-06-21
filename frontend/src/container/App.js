@@ -11,39 +11,32 @@ import {
   Switch,
 } from "react-router-dom";
 import TopBar from "../components/TopBar";
-import { connect } from 'react-redux';
+import { useSelector } from "react-redux";
 
-class App extends React.Component {
+const App = () => {
+  const { isLoggedIn } = useSelector((store) => ({
+    isLoggedIn: store.isLoggedIn,
+  }));
 
-  render() {
-    const { isLoggedIn } = this.props;
+  return (
+    <div>
+      <Router>
+        {/* Http requestleri aradan qaldirmaq ucun ve url deyisir # elave edir meselen root url #/ kimi olur */}
+        <TopBar />
+        <Switch>
+          <Route exact path="/" component={HomePage} />
+          {!isLoggedIn && <Route path="/login" component={LoginPage} />}
+          <Route path="/signup" component={UserSignupPage} />
+          <Route path="/user/:username" component={UserPage} />
+          {/* Burda dinamik olur.Yeni /user/agshin  /user/veli ve s */}
+          <Redirect to="/" />
+          {/* Yanlis url olsa /-urle yonlendirsin */}
+        </Switch>
+      </Router>
 
-    return (
-      <div>
-        <Router>
-          {/* Http requestleri aradan qaldirmaq ucun ve url deyisir # elave edir meselen root url #/ kimi olur */}
-          <TopBar />
-          <Switch>
-            <Route exact path="/" component={HomePage} />
-            {!isLoggedIn && <Route path="/login" component={LoginPage} />}
-            <Route path="/signup" component={UserSignupPage} />
-            <Route path="/user/:username" component={UserPage} />
-            {/* Burda dinamik olur.Yeni /user/agshin  /user/veli ve s */}
-            <Redirect to="/" />
-            {/* Yanlis url olsa /-urle yonlendirsin */}
-          </Switch>
-        </Router>
-
-        <LanguageSelector />
-      </div>
-    );
-  }
-}
-
-const mapStateToProps = store => {
-  return {
-    isLoggedIn: store.isLoggedIn
-  };
+      <LanguageSelector />
+    </div>
+  );
 };
 
-export default connect(mapStateToProps)(App);
+export default App;
