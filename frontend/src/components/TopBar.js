@@ -1,76 +1,76 @@
-import React, { Component } from "react";
+import React from "react";
 import logo from "../assets/hoaxify.png";
 import { Link } from "react-router-dom";
 import { withTranslation } from "react-i18next";
 import { connect } from "react-redux";
 import { logoutSuccess } from "../redux/authActions";
 
-class TopBar extends Component {
+const TopBar = (props) => {
+  const { t, isLoggedIn, username, onLogoutSuccess } = props;
 
- 
-  render() {
-    const { t,isLoggedIn,username,onLogoutSuccess} = this.props;
+  let links = (
+    <ul className="navbar-nav ms-auto">
+      <li>
+        <Link className="nav-link" to="/login">
+          {t("Login")}
+        </Link>
+      </li>
+      <li>
+        <Link className="nav-link" to="/signup">
+          {t("Sign Up")}
+        </Link>
+      </li>
+    </ul>
+  );
 
-   let links = (
-     <ul className="navbar-nav ms-auto">
-       <li>
-         <Link className="nav-link" to="/login">
-           {t('Login')}
-         </Link>
-       </li>
-       <li>
-         <Link className="nav-link" to="/signup">
-           {t('Sign Up')}
-         </Link>
-       </li>
-     </ul>
-   );
-
-
-   if (isLoggedIn) {
-     links = (
-       <ul className="navbar-nav ms-auto">
-         <li>
-           <Link className="nav-link" to={`/user/${username}`}>
-             {username}
-           </Link>
-         </li>
-         <li className="nav-link" onClick={onLogoutSuccess} style={{ cursor: 'pointer' }}>{t('Logout')}</li>
-       </ul>
-     );
-   }
-
-   return (
-     <div className="shadow-sm bg-light mb-3">
-       <nav className="navbar navbar-light  container navbar-expand">
-         <Link className="navbar-brand" to="/">
-           <img src={logo} width="60" alt="Hoaxify Logo" />
-           Hoaxify
-         </Link>
-         {links}
-       </nav>
-     </div>
-   );
-
-
-
-   
+  if (isLoggedIn) {
+    links = (
+      <ul className="navbar-nav ms-auto">
+        <li>
+          <Link className="nav-link" to={`/user/${username}`}>
+            {username}
+          </Link>
+        </li>
+        <li
+          className="nav-link"
+          onClick={onLogoutSuccess}
+          style={{ cursor: "pointer" }}
+        >
+          {t("Logout")}
+        </li>
+      </ul>
+    );
   }
-}
+
+  return (
+    <div className="shadow-sm bg-light mb-3">
+      <nav className="navbar navbar-light  container navbar-expand">
+        <Link className="navbar-brand" to="/">
+          <img src={logo} width="60" alt="Hoaxify Logo" />
+          Hoaxify
+        </Link>
+        {links}
+      </nav>
+    </div>
+  );
+};
 
 const TopBarWithTranslation = withTranslation()(TopBar);
 
-const mapStateToProps = store => {
+const mapStateToProps = (store) => {
   return {
     isLoggedIn: store.isLoggedIn,
-    username: store.username
+    username: store.username,
   };
 };
 
-const mapDispatchToProps = dispatch => {
+const mapDispatchToProps = (dispatch) => {
   return {
-    onLogoutSuccess: () => dispatch(logoutSuccess())
+    onLogoutSuccess: () => dispatch(logoutSuccess()),
   };
 };
 
-export default connect(mapStateToProps,mapDispatchToProps)(TopBarWithTranslation);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(TopBarWithTranslation);
