@@ -22,7 +22,13 @@ public class WsApplication {
     @Bean
     public CommandLineRunner createInitialUsers(UserService userService) {
         return (args) -> {
-            userService.save(new User(1, "user1", "display1", "P4ssword"));
+            for(int i = 1; i<=25;i++) {
+                User user = new User();
+                user.setUsername("user"+i);
+                user.setDisplayName("display"+i);
+                user.setPassword("P4ssword");
+                userService.save(user);
+            }
         };
     }
 

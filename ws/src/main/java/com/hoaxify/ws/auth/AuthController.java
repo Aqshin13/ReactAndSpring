@@ -3,9 +3,9 @@ package com.hoaxify.ws.auth;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.hoaxify.ws.error.ApiError;
 import com.hoaxify.ws.shared.CurrentUser;
-import com.hoaxify.ws.shared.Views;
 import com.hoaxify.ws.user.User;
 import com.hoaxify.ws.user.UserRepository;
+import com.hoaxify.ws.user.vm.UserVM;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,8 +31,8 @@ public class AuthController {
     private UserRepository userRepository;
 
     @PostMapping("/api/1.0/auth")
-    @JsonView(Views.Base.class)
-    ResponseEntity<?> handleAuthentication(@CurrentUser User user) {
-        return ResponseEntity.ok(user);
+//    @JsonView(Views.Base.class)
+    UserVM handleAuthentication(@CurrentUser User user) {
+        return new UserVM(user);
     }
 }
