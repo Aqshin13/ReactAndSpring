@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
+@RequestMapping("/api/1.0")
 public class UserController {
 
 
@@ -33,19 +34,23 @@ public class UserController {
     private UserService userService;
 
 
-    @PostMapping("/api/1.0/users")
+    @PostMapping("/users")
 //    @ResponseStatus(HttpStatus.CREATED)
     public GenericResponse createUser(@Valid @RequestBody User user) {
         userService.save(user);
         return new GenericResponse("user created");
     }
 
-    @GetMapping("/api/1.0/users")
+    @GetMapping("/users")
     Page<UserVM> getUsers(Pageable  page, @CurrentUser User user) {
         return userService.getUsers(page,user).map(UserVM::new);
     }
 
-
+    @GetMapping("/users/{username}")
+    UserVM getUser(@PathVariable String username) {
+        User user = userService.getByUsername(username);
+        return new UserVM(user);
+    }
 //    Classa aid handle
 //    @ExceptionHandler({MethodArgumentNotValidException.class})
 //    @ResponseStatus(HttpStatus.BAD_REQUEST)
