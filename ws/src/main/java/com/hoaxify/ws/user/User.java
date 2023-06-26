@@ -46,7 +46,8 @@ public class User implements UserDetails {
 //    @JsonIgnore iki terefli ignore edir.Yeni request gelende de Object create olunanda meselen password set olmur
     private String password;
 
-//    @JsonView(Views.Base.class)
+    //    @JsonView(Views.Base.class)
+//    @Lob
     private String image;
 
 

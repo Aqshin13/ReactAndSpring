@@ -20,12 +20,12 @@ const ProfileCard = (props) => {
 
   const [user, setUser] = useState({});
   const [editable, setEditable] = useState(false);
+  const [newImage, setNewImage] = useState();
 
   useEffect(() => {
     setUser(props.user);
   }, [props.user]);
 
-  
   useEffect(() => {
     setEditable(pathUsername === loggedInUsername);
   }, [pathUsername, loggedInUsername]);
@@ -37,14 +37,21 @@ const ProfileCard = (props) => {
   useEffect(() => {
     if (!inEditMode) {
       setUpdatedDisplayName(undefined);
+      setNewImage(undefined);
     } else {
       setUpdatedDisplayName(displayName);
     }
   }, [inEditMode, displayName]);
 
   const onClickSave = async () => {
+    let image;
+    if (newImage) {
+      image = newImage.split(',')[1];
+    }
+    
     const body = {
       displayName: updatedDisplayName,
+      image,
     };
     try {
       const response = await updateUser(username, body);
@@ -53,6 +60,17 @@ const ProfileCard = (props) => {
     } catch (error) {}
   };
 
+  const onChangeFile = (event) => {
+    if (event.target.files.length < 1) {
+      return;
+    }
+    const file = event.target.files[0];
+    const fileReader = new FileReader();
+    fileReader.onloadend = () => {
+      setNewImage(fileReader.result);
+    };
+    fileReader.readAsDataURL(file);
+  };
   const pendingApiCall = useApiProgress("put", "/api/1.0/users/" + username);
 
   return (
@@ -64,7 +82,8 @@ const ProfileCard = (props) => {
           height="200"
           alt={`${username} profile`}
           image={image}
-        />{" "}
+          tempimage={newImage}
+        />
       </div>
       <div className="card-body">
         {!inEditMode && (
@@ -93,6 +112,7 @@ const ProfileCard = (props) => {
               }}
             />
             <br />
+            <input type="file" onChange={onChangeFile} />
             <div>
               {/* <button className="btn btn-primary d-inline-flex"  onClick={onClickSave}>
                 <i className="material-icons">save</i>
