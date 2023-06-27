@@ -18,6 +18,11 @@ const defaultState = {
         ...action.payload,
         isLoggedIn:true
       }
+    }else if (action.type === ACTIONS.UPDATE_SUCCESS) {
+      return {
+        ...state,
+        ...action.payload
+      };
     }
     return state;
   };
