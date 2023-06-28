@@ -26,18 +26,18 @@ public class WsApplication {
     @Profile("dev")
     public CommandLineRunner createInitialUsers(UserService userService, HoaxService hoaxService) {
         return (args) -> {
-            for(int i = 1; i<=25;i++) {
+            for (int i = 1; i <= 25; i++) {
                 User user = new User();
-                user.setUsername("user"+i);
-                user.setDisplayName("display"+i);
+                user.setUsername("user" + i);
+                user.setDisplayName("display" + i);
                 user.setPassword("P4ssword");
                 userService.save(user);
-            }
 
-            for(int i = 1;i<=50;i++) {
-                Hoax hoax = new Hoax();
-                hoax.setContent("hoax - " +i);
-                hoaxService.save(hoax);
+                for (int j = 1; j <= 2; j++) {
+                    Hoax hoax = new Hoax();
+                    hoax.setContent("hoax (" + j + ") from user (" + i + ")");
+                    hoaxService.save(hoax, user);
+                }
             }
         };
     }

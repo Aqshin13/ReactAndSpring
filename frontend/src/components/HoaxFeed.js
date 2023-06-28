@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import HoaxView from "./HoaxView";
 import { useApiProgress } from "../shared/ApiProgress";
 import Spinner from "./Spinner";
+import { useParams } from 'react-router-dom';
 
 const HoaxFeed = () => {
   const [hoaxPage, setHoaxPage] = useState({
@@ -12,21 +13,18 @@ const HoaxFeed = () => {
     number: 0,
   });
   const { t } = useTranslation();
-  const pendingApiCall = useApiProgress("get", "/api/1.0/hoaxes");
+  const { username } = useParams();
+
+  const path = username ? `/api/1.0/users/${username}/hoaxes?page=` : '/api/1.0/hoaxes?page=';
+  const pendingApiCall = useApiProgress('get', path);
 
   useEffect(() => {
-    const loadHoaxes = async () => {
-      try {
-        const response = await getHoaxes();
-        setHoaxPage(response.data);
-      } catch (error) {}
-    };
     loadHoaxes();
   }, []);
 
   const loadHoaxes = async (page) => {
     try {
-      const response = await getHoaxes(page);
+      const response = await getHoaxes(username, page);
       setHoaxPage((previousHoaxPage) => ({
         ...response.data,
         content: [...previousHoaxPage.content, ...response.data.content],
