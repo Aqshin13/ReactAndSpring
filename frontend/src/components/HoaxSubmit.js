@@ -2,15 +2,19 @@ import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import ProfileImageWithDefault from "./ProfileImageWithDefault";
 import { useTranslation } from "react-i18next";
-import { postHoax } from "../api/apiCalls";
-import { useApiProgress } from '../shared/ApiProgress';
-import ButtonWithProgress from './ButtonWithProgress';
+import { postHoax, postHoaxAttachment } from "../api/apiCalls";
+import { useApiProgress } from "../shared/ApiProgress";
+import ButtonWithProgress from "./ButtonWithProgress";
+import Input from "./Input";
+import AutoUploadImage from "./AutoUploadImage";
 
 const HoaxSubmit = () => {
   const { image } = useSelector((store) => ({ image: store.image }));
   const [focused, setFocused] = useState(false);
   const [hoax, setHoax] = useState("");
   const [errors, setErrors] = useState({});
+  const [newImage, setNewImage] = useState();
+  const [attachmentId, setAttachmentId] = useState();
 
   const { t } = useTranslation();
 
@@ -18,6 +22,9 @@ const HoaxSubmit = () => {
     if (!focused) {
       setHoax("");
       setErrors({});
+      setNewImage();
+      setAttachmentId();
+
     }
   }, [focused]);
 
@@ -25,12 +32,17 @@ const HoaxSubmit = () => {
     setErrors({});
   }, [hoax]);
 
-  const pendingApiCall = useApiProgress('post', '/api/1.0/hoaxes');
-
+  const pendingApiCall = useApiProgress("post", "/api/1.0/hoaxes", true);
+  const pendingFileUpload = useApiProgress(
+    "post",
+    "/api/1.0/hoax-attachments",
+    true
+  );
 
   const onClickHoaxify = async () => {
     const body = {
       content: hoax,
+      attachmentId: attachmentId
     };
 
     try {
@@ -41,6 +53,26 @@ const HoaxSubmit = () => {
         setErrors(error.response.data.validationErrors);
       }
     }
+  };
+
+  const onChangeFile = (event) => {
+    if (event.target.files.length < 1) {
+      return;
+    }
+    const file = event.target.files[0];
+    const fileReader = new FileReader();
+    fileReader.onloadend = () => {
+      setNewImage(fileReader.result);
+      uploadFile(file);
+    };
+    fileReader.readAsDataURL(file);
+  };
+
+  const uploadFile = async (file) => {
+    const attachment = new FormData();
+    attachment.append("file", file);
+   const response = await postHoaxAttachment(attachment);
+    setAttachmentId(response.data.id);
   };
 
   let textAreaClass = "form-control";
@@ -67,22 +99,29 @@ const HoaxSubmit = () => {
         <div className="invalid-feedback">{errors.content}</div>
 
         {focused && (
-          <div className="text-right mt-1">
-           <ButtonWithProgress
-              className="btn btn-primary"
-              onClick={onClickHoaxify}
-              text="Hoaxify"
-              pendingApiCall={pendingApiCall}
-              disabled={pendingApiCall}
-            />
-            <button
-              className="btn btn-light d-inline-flex ml-1"
-              onClick={() => setFocused(false)} disabled={pendingApiCall}
-            >
-              <i className="material-icons">close</i>
-              {t("Cancel")}
-            </button>
-          </div>
+          <>
+            {!newImage && <Input type="file" onChange={onChangeFile} />}
+            {newImage && (
+              <AutoUploadImage image={newImage} uploading={pendingFileUpload} />
+            )}{" "}
+            <div className="text-right mt-1">
+              <ButtonWithProgress
+                className="btn btn-primary"
+                onClick={onClickHoaxify}
+                text="Hoaxify"
+                pendingApiCall={pendingApiCall}
+                disabled={pendingApiCall || pendingFileUpload}
+              />
+              <button
+                className="btn btn-light d-inline-flex ml-1"
+                onClick={() => setFocused(false)}
+                disabled={pendingApiCall || pendingFileUpload}
+              >
+                <i className="material-icons">close</i>
+                {t("Cancel")}
+              </button>
+            </div>
+          </>
         )}
       </div>
     </div>

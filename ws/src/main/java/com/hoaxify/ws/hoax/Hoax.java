@@ -2,6 +2,7 @@ package com.hoaxify.ws.hoax;
 
 import java.util.Date;
 
+import com.hoaxify.ws.file.FileAttachment;
 import com.hoaxify.ws.user.User;
 import jakarta.persistence.*;
 
@@ -15,7 +16,7 @@ public class Hoax {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-    @Size(min = 1, max = 1000)
+//    @Size(min = 1, max = 1000)
     @Column(length = 1000)
     private String content;
 
@@ -23,5 +24,8 @@ public class Hoax {
     private Date timestamp;
     @ManyToOne
     private User user;
+
+    @OneToOne(mappedBy = "hoax")
+    private FileAttachment fileAttachment;
 
 }
