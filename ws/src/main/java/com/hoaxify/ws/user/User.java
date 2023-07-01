@@ -3,6 +3,7 @@ package com.hoaxify.ws.user;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.hoaxify.ws.hoax.Hoax;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -15,6 +16,7 @@ import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -39,7 +41,8 @@ public class User implements UserDetails {
     @Size(min = 4, max = 255)
 //    @JsonView(Views.Base.class)
     private String displayName;
-
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
+    private List<Hoax> hoaxes;
     @NotNull
     @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).*$", message = "{hoaxify.constraints.password.Pattern.message}")
     @Size(min = 8, max = 255)

@@ -25,7 +25,7 @@ public class Hoax {
     @ManyToOne
     private User user;
 
-    @OneToOne(mappedBy = "hoax")
+    @OneToOne(mappedBy = "hoax", cascade = CascadeType.REMOVE)
     private FileAttachment fileAttachment;
 
 }

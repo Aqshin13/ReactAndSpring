@@ -6,9 +6,11 @@ import java.util.Optional;
 
 import com.hoaxify.ws.file.FileAttachment;
 import com.hoaxify.ws.file.FileAttachmentRepository;
+import com.hoaxify.ws.file.FileService;
 import com.hoaxify.ws.hoax.vm.HoaxSubmitVM;
 import com.hoaxify.ws.user.User;
 import com.hoaxify.ws.user.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -23,15 +25,29 @@ public class HoaxService {
     UserService userService;
 
     FileAttachmentRepository fileAttachmentRepository;
+    FileService fileService;
 
 
-    public HoaxService(HoaxRepository hoaxRepository, UserService userService, FileAttachmentRepository fileAttachmentRepository) {
+    public HoaxService(HoaxRepository hoaxRepository, UserService userService,
+                       FileAttachmentRepository fileAttachmentRepository,FileService fileService) {
         super();
         this.hoaxRepository = hoaxRepository;
-        this.userService = userService;
         this.fileAttachmentRepository = fileAttachmentRepository;
+        this.fileService = fileService;
+        this.userService = userService;
 
 
+
+    }
+
+
+
+
+    public void deleteHoaxesOfUser(String username) {
+        User inDB = userService.getByUsername(username);
+        Specification<Hoax> userOwned = userIs(inDB);
+        List<Hoax> hoaxesToBeRemoved = hoaxRepository.findAll(userOwned);
+        hoaxRepository.deleteAll(hoaxesToBeRemoved);
     }
 
 //    public void save(Hoax hoax, User user) {
@@ -132,6 +148,16 @@ public class HoaxService {
         return (root, query, criteriaBuilder) -> {
             return criteriaBuilder.greaterThan(root.get("id"), id);
         };
+    }
+
+
+    public void delete(long id) {
+        Hoax inDB = hoaxRepository.getOne(id);
+        if(inDB.getFileAttachment() != null) {
+            String fileName = inDB.getFileAttachment().getName();
+            fileService.deleteAttachmentFile(fileName);
+        }
+        hoaxRepository.deleteById(id);
     }
 
 }

@@ -2,8 +2,10 @@ package com.hoaxify.ws.user;
 
 import com.hoaxify.ws.error.NotFoundException;
 import com.hoaxify.ws.file.FileService;
+import com.hoaxify.ws.hoax.HoaxService;
 import com.hoaxify.ws.user.vm.UserUpdateVM;
 import lombok.SneakyThrows;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -21,6 +23,8 @@ public class UserService {
 
     private UserRepository userRepository;
 
+//    HoaxService hoaxService;
+
     private PasswordEncoder passwordEncoder;
     private FileService fileService;
 
@@ -31,12 +35,25 @@ public class UserService {
         this.fileService = fileService;
 
     }
-
+//    @Autowired
+//    public void setHoaxService(HoaxService hoaxService) {
+//        this.hoaxService = hoaxService;
+//    }
     public void save(User user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         userRepository.save(user);
     }
 
+    public void deleteUser(String username) {
+//        hoaxService.deleteHoaxesOfUser(username);
+//        User inDB = userRepository.findByUsername(username);
+//        userRepository.delete(inDB);
+//        userRepository.deleteByUsername(username);
+
+        User inDB = userRepository.findByUsername(username);
+        fileService.deleteAllStoredFilesForUser(inDB);
+        userRepository.delete(inDB);
+    }
 
     public Page<User> getUsers(Pageable page, User user) {
         if (user != null) {
