@@ -3,6 +3,7 @@ package com.hoaxify.ws.user;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.hoaxify.ws.auth.Token;
 import com.hoaxify.ws.hoax.Hoax;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -43,6 +44,9 @@ public class User implements UserDetails {
     private String displayName;
     @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
     private List<Hoax> hoaxes;
+
+    @OneToMany(mappedBy="user", cascade=CascadeType.REMOVE)
+    private List<Token> tokens;
     @NotNull
     @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).*$", message = "{hoaxify.constraints.password.Pattern.message}")
     @Size(min = 8, max = 255)
